@@ -14,27 +14,29 @@ def runADay(fishLives):
     return fishLives
 
 
-def fishChildrenInDays(startNum, startDay, totalDays):
-    if totalDays-startDay < 8 or (startNum <= 6 and totalDays-startDay < 6):
-        print(totalDays)
-        return 1
-    else:
-        print("he")
-        total = 1
-        for day in range(0,totalDays-startDay):
-            if day == startNum or ((day-startNum)%7 == 0 and day > startNum):
-                total += fishChildrenInDays(8, startDay + day, totalDays)
-        return total
+def fishChildrenInDays(startNum, parentMax, startingMax, totalDays):
+    numbers = parentMax + 1
+    offsets = [0 for i in range(numbers)]
+    offsets[startNum] = 1
+
+    spawnStorage = [0 for i in range(numbers)]
+
+    for day in range(totalDays+startingMax-parentMax):
+        spawnStorage[(day+startingMax-parentMax)%numbers] += offsets[day%numbers]
+        offsets[day%numbers] += spawnStorage[day%numbers]
+        spawnStorage[day%numbers] = 0
+
+    return sum(offsets) 
         
 
 def countEndNumInDays(fishLives, days):
     total = 0
     for fish in fishLives:
-        total += fishChildrenInDays(fish, 0, days)
+        total += fishChildrenInDays(fish, 6, 8, days)
     return total
 
 
 print("Initial Day: "  + str(len(fishLives)))
-days = 7
+days = 256
 print("After Day " + str(days) + ": " + str(countEndNumInDays(fishLives, days)))
 
