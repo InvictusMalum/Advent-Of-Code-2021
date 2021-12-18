@@ -96,16 +96,13 @@ class Packet():
 
     def getLiteralValue(self, string):
         stop = False
-        values = []
+        value = ''
         while not stop:
             if string[0] == '0':
                 stop = True
-            values.append(string[1:5])
+            value += string[1:5]
             string = string[5:]
-        decimalString = ''
-        for digit in values:
-            decimalString += str(binaryToInt(digit))
-        value = int(decimalString)
+        value = binaryToInt(value)
         return value
 
     def getLiteralLeftover(self, string):
@@ -118,7 +115,7 @@ class Packet():
     
     def evaluate(self):
         if self.typeID == 4:
-            self.value = self.getLiteralValue(self.string)
+            self.value = self.getLiteralValue(self.string[6:])
 
         # Sum of all packets
         elif self.typeID == 0:
@@ -134,6 +131,7 @@ class Packet():
             for packet in self.subPackets:
                 packet.evaluate()
                 product *= packet.value
+            self.value = product
 
         # Minimum packet value
         elif self.typeID == 2:
